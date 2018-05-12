@@ -1,3 +1,4 @@
+#include <type_safe/integer.hpp>
 #include <boost/test/unit_test.hpp>
 
 using namespace std;
