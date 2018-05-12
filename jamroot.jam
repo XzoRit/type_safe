@@ -1,0 +1,17 @@
+import boost ;
+
+boost.use-project ;
+
+import testing ;
+
+exe cpp_monad
+    : main.cpp
+    : <cxxflags>-std=c++17
+    ;
+
+run [ glob *_test.cpp ]
+    : <testing.arg>"--log_level=error" "--log_sink=stdout"
+    :
+    : <cxxflags>-std=c++17 <use>/boost//headers
+    : test_type_safe
+    ;

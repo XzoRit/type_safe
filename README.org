@@ -1,0 +1,1 @@
+* playground for [[https://github.com/foonathan/type_safe][type_safe lib]]
