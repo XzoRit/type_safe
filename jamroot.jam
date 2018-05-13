@@ -4,9 +4,14 @@ boost.use-project ;
 
 import testing ;
 
+project
+    : default-build debug
+    : requirements <cxxflags>-std=c++17
+      <warnings>all
+      <warnings-as-errors>on
+    ;
 exe cpp_monad
     : main.cpp
-    : <cxxflags>-std=c++17
     ;
 
 run [ glob *_test.cpp ]
