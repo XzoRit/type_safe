@@ -1,5 +1,8 @@
 #include <type_safe/integer.hpp>
+#include <type_safe/flag.hpp>
+
 #include <limits>
+#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 
@@ -28,6 +31,27 @@ BOOST_AUTO_TEST_CASE(ts_integer)
 
         BOOST_REQUIRE_THROW(a + b, ts::checked_arithmetic::error);
     }
+}
+
+BOOST_AUTO_TEST_CASE(ts_flag)
+{
+    using flag = ts::flag;
+    flag a{true};
+
+    BOOST_TEST( a.toggle());
+    BOOST_TEST(!a.toggle());
+
+    a.change(false);
+    a.change(true);
+
+    a.set();
+    a.reset();
+
+    BOOST_TEST( a.try_set());
+    BOOST_TEST(!a.try_set());
+
+    BOOST_TEST( a.try_reset());
+    BOOST_TEST(!a.try_reset());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
