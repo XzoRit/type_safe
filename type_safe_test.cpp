@@ -36,22 +36,38 @@ BOOST_AUTO_TEST_CASE(ts_integer)
 BOOST_AUTO_TEST_CASE(ts_flag)
 {
     using flag = ts::flag;
-    flag a{true};
+    {
+        flag a{true};
 
-    BOOST_TEST( a.toggle());
-    BOOST_TEST(!a.toggle());
+        BOOST_TEST(a.toggle());
+        BOOST_TEST(!a.toggle());
 
-    a.change(false);
-    a.change(true);
+        a.change(false);
+        a.change(true);
 
-    a.set();
-    a.reset();
+        a.set();
+        a.reset();
 
-    BOOST_TEST( a.try_set());
-    BOOST_TEST(!a.try_set());
+        BOOST_TEST(a.try_set());
+        BOOST_TEST(!a.try_set());
 
-    BOOST_TEST( a.try_reset());
-    BOOST_TEST(!a.try_reset());
+        BOOST_TEST(a.try_reset());
+        BOOST_TEST(!a.try_reset());
+    }
+    {
+        vector nums = {1, 2, 1, 3, 4, 1, 5, 6, 7};
+        flag found_one{false};
+        vector<int> nums_after_one{};
+        for(const auto& a : nums)
+        {
+            if(a == 1) found_one.change(true);
+            else if(found_one.try_reset()) nums_after_one.push_back(a);
+        }
+        const vector expected{2, 3, 5};
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(
+            begin(nums_after_one), end(nums_after_one),
+            begin(expected), end(expected));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
