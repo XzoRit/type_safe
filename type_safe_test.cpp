@@ -1,5 +1,6 @@
 #include <type_safe/integer.hpp>
 #include <type_safe/flag.hpp>
+#include <type_safe/constrained_type.hpp>
 
 #include <limits>
 #include <iostream>
@@ -68,6 +69,33 @@ BOOST_AUTO_TEST_CASE(ts_flag)
             begin(nums_after_one), end(nums_after_one),
             begin(expected), end(expected));
     }
+}
+
+struct boost_test_verifier
+{
+    template<class Value, class Constrain>
+    static constexpr auto verify(Value&& a, const Constrain& c) ->
+        typename decay<Value>::type
+    {
+        BOOST_TEST(c(a), "constraint not satisfied with value = " << a);
+        return forward<Value>(a);
+    }
+};
+
+struct is_odd
+{
+    template<class Value>
+    constexpr bool operator()(const Value& a) const noexcept(noexcept(a % 2))
+    {
+        return a % 2;
+    }
+};
+using always_odd = ts::constrained_type<unsigned, is_odd, boost_test_verifier>;
+
+BOOST_AUTO_TEST_CASE(ts_constrained_type)
+{
+    always_odd a{3u};
+    BOOST_TEST(is_odd{}(a.get_value()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
