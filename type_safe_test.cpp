@@ -2,6 +2,8 @@
 #include <type_safe/flag.hpp>
 #include <type_safe/constrained_type.hpp>
 
+#include <boost/core/demangle.hpp>
+
 #include <limits>
 #include <iostream>
 
@@ -10,6 +12,8 @@
 namespace ts = type_safe;
 
 using namespace std;
+
+using boost::core::demangle;
 
 BOOST_AUTO_TEST_SUITE(type_safe)
 
@@ -77,7 +81,8 @@ struct boost_test_verifier
     static constexpr auto verify(Value&& a, const Constrain& c) ->
         typename decay<Value>::type
     {
-        BOOST_TEST(c(a), "constraint not satisfied with value = " << a);
+        BOOST_TEST(c(a),
+                   "constraint: \"" << demangle(typeid(c).name()) << "\" not satisfied with value = " << a);
         return forward<Value>(a);
     }
 };
@@ -94,7 +99,7 @@ using always_odd = ts::constrained_type<unsigned, is_odd, boost_test_verifier>;
 
 BOOST_AUTO_TEST_CASE(ts_constrained_type)
 {
-    always_odd a{3u};
+    always_odd a{2u};
     BOOST_TEST(is_odd{}(a.get_value()));
 }
 
