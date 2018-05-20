@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <iostream>
+#include <type_traits>
 
 #include <boost/test/unit_test.hpp>
 
@@ -90,16 +91,21 @@ struct boost_test_verifier
 struct is_odd
 {
     template<class Value>
-    constexpr bool operator()(const Value& a) const noexcept(noexcept(a % 2))
+    struct is_valid : is_unsigned<Value> {};
+
+    template<class Value>
+    constexpr bool operator()(Value a) const noexcept(noexcept(a % 2))
     {
         return a % 2;
     }
 };
+
 using always_odd = ts::constrained_type<unsigned, is_odd, boost_test_verifier>;
 
 BOOST_AUTO_TEST_CASE(ts_constrained_type)
 {
-    always_odd a{2u};
+    static_assert(!is_constructible<always_odd, signed>::value);
+    const always_odd a{3u};
     BOOST_TEST(is_odd{}(a.get_value()));
 }
 
