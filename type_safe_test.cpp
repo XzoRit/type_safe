@@ -79,12 +79,11 @@ BOOST_AUTO_TEST_CASE(ts_flag)
 struct boost_test_verifier
 {
     template<class Value, class Constrain>
-    static constexpr auto verify(Value&& a, const Constrain& c) ->
-        typename decay<Value>::type
+    static constexpr Value verify(Value a, const Constrain& c)
     {
         BOOST_TEST(c(a),
                    "constraint: \"" << demangle(typeid(c).name()) << "\" not satisfied with value = " << a);
-        return forward<Value>(a);
+        return a;
     }
 };
 
