@@ -101,11 +101,28 @@ struct is_odd
 
 using always_odd = ts::constrained_type<unsigned, is_odd, boost_test_verifier>;
 
+ostream& operator<<(ostream& s, const always_odd& v)
+{
+    s << "always_odd(" << v.get_value() << ")";
+    return s;
+}
+
 BOOST_AUTO_TEST_CASE(ts_constrained_type)
 {
     static_assert(!is_constructible<always_odd, signed>::value);
-    const always_odd a{3u};
+    always_odd a{3u};
     BOOST_TEST(is_odd{}(a.get_value()));
+
+    const auto b = ts::constrain<boost_test_verifier>(5u, is_odd{});
+    static_assert(is_same_v<decay_t<decltype(b)>, always_odd>);
+
+    auto a_mod = a.modify();
+    a_mod.get() += 2;
+    BOOST_TEST(a == b);
+
+    ts::with(a, [](auto& a){ a += 2;});
+    ts::with(a, [](auto& a){ a -= 2;});
+    BOOST_TEST(a == b);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
