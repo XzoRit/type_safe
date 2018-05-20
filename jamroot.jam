@@ -10,7 +10,7 @@ project
       <warnings>all
       <warnings-as-errors>on
     ;
-exe cpp_monad
+exe cpp_type_safe
     : main.cpp
     ;
 
