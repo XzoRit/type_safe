@@ -113,15 +113,13 @@ BOOST_AUTO_TEST_CASE(ts_constrained_type)
     always_odd a{3u};
     BOOST_TEST(is_odd{}(a.get_value()));
 
-    const auto b = ts::constrain<boost_test_verifier>(5u, is_odd{});
+    const auto b = ts::constrain<boost_test_verifier>(3u, is_odd{});
     static_assert(is_same_v<decay_t<decltype(b)>, always_odd>);
+    BOOST_TEST(a == b);
 
     auto a_mod = a.modify();
     a_mod.get() += 2;
-    BOOST_TEST(a == b);
-
-    ts::with(a, [](auto& a){ a += 2;});
-    ts::with(a, [](auto& a){ a -= 2;});
+    ts::with(a, [](auto& a) { a -= 2; });
     BOOST_TEST(a == b);
 }
 
