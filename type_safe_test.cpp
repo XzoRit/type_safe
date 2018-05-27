@@ -1,6 +1,7 @@
 #include <type_safe/constrained_type.hpp>
 #include <type_safe/flag.hpp>
 #include <type_safe/integer.hpp>
+#include <type_safe/optional.hpp>
 
 #include <boost/core/demangle.hpp>
 
@@ -123,6 +124,24 @@ BOOST_AUTO_TEST_CASE(ts_constrained_type)
     a_mod.get() += 2;
     ts::with(a, [](auto& a) { a -= 2; });
     BOOST_TEST(a == b);
+}
+
+BOOST_AUTO_TEST_CASE(ts_optional)
+{
+    ts::optional<int> a;
+    BOOST_TEST(!a.has_value());
+    BOOST_TEST(a.value_or(11) == 11);
+
+    a = 11;
+    ts::optional<string> b = a.map([](const auto& a) { return to_string(a); })
+                                 .map([](const auto& a) { return stoi(a); })
+                                 .map([](const auto& a) { return to_string(a); });
+    BOOST_TEST(b.has_value());
+    BOOST_TEST(b.value() == "11");
+
+    int i;
+    ts::with(b, [](const auto& a, auto& b) { b = stoi(a); }, i);
+    BOOST_TEST(i == 11);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
